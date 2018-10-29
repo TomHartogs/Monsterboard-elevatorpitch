@@ -1,0 +1,14 @@
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <SwitchPreference
+        android:key="@string/pref_key_passwordEnabled"
+        android:title="@string/pref_title_passwordEnabled" />
+    <EditTextPreference
+        android:defaultValue="@string/pref_default_password"
+        android:key="@string/pref_key_password"
+        android:selectAllOnFocus="true"
+        android:singleLine="true"
+        android:title="@string/pref_title_password"
+        android:inputType="textPassword"/>
+
+</PreferenceScreen>

@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="title_activity_settings">Settings</string>
+
+    <string name="pref_header_camera">Camera</string>
+        <string name="pref_category_video">Video</string>
+            <string name="pref_title_resolution">Resolution</string>
+            <string name="pref_key_resolution">resolutionValue</string>
+            <string-array name="pref_resolution_titles">
+                <item>Low</item>
+                <item>Medium</item>
+                <item>High</item>
+            </string-array>
+            <string-array name="pref_resolution_values">
+                <item>480</item>
+                <item>720</item>
+                <item>1080</item>
+            </string-array>
+
+        <string name="pref_category_recording">Recording</string>
+            <string name="pref_key_maxRecordingLengthEnabled">maxRecordingLengthEnabled</string>
+            <string name="pref_title_maxRecordingLengthEnabled">Restrict video length</string>
+            <string name="pref_title_maxRecordingLength">Max length</string>
+            <string name="pref_key_maxRecordingLength">maxRecordingLength</string>
+            <string name="pref_key_countdownTimerEnabled">countdownTimerEnabled</string>
+            <string name="pref_title_countdownTimerEnabled">Show countdown timer</string>
+
+        <string name="pref_category_audio">Audio</string>
+            <string name="pref_title_audioSource">Source</string>
+            <string name="pref_key_audioSource">audioSourceValue</string>
+            <string-array name="pref_audioSource_titles">
+                <item>Camcorder</item>
+                <item>Default</item>
+                <item>Mic</item>
+                <item>Voice uplink</item>
+                <item>Voice recognition</item>
+                <item>Voice call</item>
+                <item>Voice communication</item>
+            </string-array>
+
+
+    <string name="pref_header_security">Security</string>
+        <string name="pref_key_passwordEnabled">passwordEnabled</string>
+        <string name="pref_title_passwordEnabled">Request password</string>
+
+        <string name="pref_key_password">password</string>
+        <string name="pref_title_password">Password</string>
+        <string name="pref_default_password">StudioSurprise</string>
+</resources>

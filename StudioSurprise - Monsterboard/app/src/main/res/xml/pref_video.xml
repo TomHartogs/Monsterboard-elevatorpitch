@@ -1,0 +1,44 @@
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+   <PreferenceCategory
+        android:title="@string/pref_category_video">
+
+       <ListPreference
+           android:defaultValue="720"
+           android:entries="@array/pref_resolution_titles"
+           android:entryValues="@array/pref_resolution_values"
+           android:key="@string/pref_key_resolution"
+           android:title="@string/pref_title_resolution" />
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        android:title="@string/pref_category_recording">
+        <SwitchPreference
+            android:defaultValue="false"
+            android:key="@string/pref_key_maxRecordingLengthEnabled"
+            android:title="@string/pref_title_maxRecordingLengthEnabled" />
+        <EditTextPreference
+            android:defaultValue="60"
+            android:key="@string/pref_key_maxRecordingLength"
+            android:selectAllOnFocus="true"
+            android:singleLine="true"
+            android:inputType="numberDecimal"
+            android:digits="0123456789"
+            android:title="@string/pref_title_maxRecordingLength" />
+        <SwitchPreference
+            android:defaultValue="false"
+            android:key="@string/pref_key_countdownTimerEnabled"
+            android:title="@string/pref_title_countdownTimerEnabled" />
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        android:title="@string/pref_category_audio">
+        <ListPreference
+            android:defaultValue="Camcorder"
+            android:entries="@array/pref_audioSource_titles"
+            android:entryValues="@array/pref_audioSource_titles"
+            android:key="@string/pref_key_audioSource"
+            android:title="@string/pref_title_audioSource" />
+    </PreferenceCategory>
+
+</PreferenceScreen>
