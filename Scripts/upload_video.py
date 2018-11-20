@@ -1,6 +1,6 @@
 #!/usr/bin/python
 
-import httplib
+import http.client as httplib
 import httplib2
 import os
 import random
@@ -132,25 +132,25 @@ def resumable_upload(insert_request):
   retry = 0
   while response is None:
     try:
-      print "Uploading file..."
+      print ("Uploading file...")
       status, response = insert_request.next_chunk()
       if 'id' in response:
-        print "Video id '%s' was successfully uploaded." % response['id']
+        print ("Video id '%s' was successfully uploaded." % response['id'])
         return response['id']
       else:
         exit("The upload failed with an unexpected response: %s" % response)
         sys.exit(1)
-    except HttpError, e:
+    except HttpError as e:
       if e.resp.status in RETRIABLE_STATUS_CODES:
         error = "A retriable HTTP error %d occurred:\n%s" % (e.resp.status,
                                                              e.content)
       else:
         raise
-    except RETRIABLE_EXCEPTIONS, e:
+    except RETRIABLE_EXCEPTIONS as e:
       error = "A retriable error occurred: %s" % e
 
     if error is not None:
-      print error
+      print (error)
       retry += 1
       if retry > MAX_RETRIES:
         exit("No longer attempting to retry.")
@@ -158,7 +158,7 @@ def resumable_upload(insert_request):
 
       max_sleep = 2 ** retry
       sleep_seconds = random.random() * max_sleep
-      print "Sleeping %f seconds and then retrying..." % sleep_seconds
+      print ("Sleeping %f seconds and then retrying..." % sleep_seconds)
       time.sleep(sleep_seconds)
 
 def print_response(response):
@@ -209,7 +209,7 @@ def build_resource(properties):
 def remove_empty_kwargs(**kwargs):
   good_kwargs = {}
   if kwargs is not None:
-    for key, value in kwargs.iteritems():
+    for key, value in kwargs.items():
       if value:
         good_kwargs[key] = value
   return good_kwargs
@@ -258,6 +258,6 @@ if __name__ == '__main__':
      'snippet.position': ''},
     part='snippet',
     onBehalfOfContentOwner='')
-  except HttpError, e:
-    print "An HTTP error %d occurred:\n%s" % (e.resp.status, e.content)
+  except HttpError as e:
+    print ("An HTTP error %d occurred:\n%s" % (e.resp.status, e.content))
     sys.exit(1)
