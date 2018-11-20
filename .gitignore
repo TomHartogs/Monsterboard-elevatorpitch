@@ -2,3 +2,4 @@
 *.csv
 Scripts/client_secret.json
 Scripts/youtube_upload-oauth2.json
+youtube_upload-oauth2.json
