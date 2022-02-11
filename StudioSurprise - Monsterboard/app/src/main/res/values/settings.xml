@@ -8,9 +8,9 @@
             <string name="pref_title_resolution">Resolution</string>
             <string name="pref_key_resolution">resolutionValue</string>
             <string-array name="pref_resolution_titles">
-                <item>Low</item>
-                <item>Medium</item>
-                <item>High</item>
+                <item>Low (480p)</item>
+                <item>Medium (720p)</item>
+                <item>High (1080p)</item>
             </string-array>
             <string-array name="pref_resolution_values">
                 <item>480</item>
@@ -18,13 +18,14 @@
                 <item>1080</item>
             </string-array>
 
+            <string name="pref_title_zoomlevel">Set zoom level</string>
+            <string name="pref_key_zoomlevel">zoomLevel</string>
+
         <string name="pref_category_recording">Recording</string>
             <string name="pref_key_maxRecordingLengthEnabled">maxRecordingLengthEnabled</string>
             <string name="pref_title_maxRecordingLengthEnabled">Restrict video length</string>
             <string name="pref_title_maxRecordingLength">Max length</string>
             <string name="pref_key_maxRecordingLength">maxRecordingLength</string>
-            <string name="pref_key_countdownTimerEnabled">countdownTimerEnabled</string>
-            <string name="pref_title_countdownTimerEnabled">Show countdown timer</string>
 
         <string name="pref_category_audio">Audio</string>
             <string name="pref_title_audioSource">Source</string>
@@ -39,6 +40,17 @@
                 <item>Voice communication</item>
             </string-array>
 
+    <string name="pref_header_ui">User interface</string>
+        <string name="pref_category_ui_text">Text</string>
+            <string name="pref_key_welcomeMessage">welcomeMessage</string>
+            <string name="pref_title_welcomeMessage">Welcome message</string>
+
+            <string name="pref_key_recordingFinishedMessage">recordingFinishedMessage</string>
+            <string name="pref_title_recordingFinishedMessage">Recording finished message</string>
+
+        <string name="pref_category_ui_timing">Timing</string>
+            <string name="pref_key_resetTimer">resetTimer</string>
+            <string name="pref_title_resetTimer">Time till UI resets</string>
 
     <string name="pref_header_security">Security</string>
         <string name="pref_key_passwordEnabled">passwordEnabled</string>

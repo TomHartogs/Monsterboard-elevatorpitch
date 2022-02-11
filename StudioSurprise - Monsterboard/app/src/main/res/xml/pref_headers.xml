@@ -3,12 +3,17 @@
     <!-- These settings headers are only used on tablets. -->
 
     <header
-        android:fragment="com.example.tomha.elevatorPitch.Preferences.SettingsActivity$CameraPreferenceFragment"
+        android:fragment="com.example.tomha.videoRecorder.Preferences.SettingsActivity$CameraPreferenceFragment"
         android:icon="@android:drawable/ic_menu_camera"
         android:title="@string/pref_header_camera" />
 
     <header
-        android:fragment="com.example.tomha.elevatorPitch.Preferences.SettingsActivity$SecurityPreferenceFragment"
+        android:fragment="com.example.tomha.videoRecorder.Preferences.SettingsActivity$UIPreferenceFragment"
+        android:icon="@android:drawable/ic_menu_gallery"
+        android:title="@string/pref_header_ui" />
+
+    <header
+        android:fragment="com.example.tomha.videoRecorder.Preferences.SettingsActivity$SecurityPreferenceFragment"
         android:icon="@android:drawable/ic_lock_lock"
         android:title="@string/pref_header_security" />
 

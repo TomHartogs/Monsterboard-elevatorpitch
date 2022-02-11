@@ -1,0 +1,32 @@
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <PreferenceCategory
+        android:title="@string/pref_category_ui_text">
+        <EditTextPreference
+            android:key="@string/pref_key_welcomeMessage"
+            android:title="@string/pref_title_welcomeMessage"
+            android:selectAllOnFocus="true"
+            android:singleLine="true"
+            android:defaultValue="@string/welcomeMessage"/>
+
+        <EditTextPreference
+            android:key="@string/pref_key_recordingFinishedMessage"
+            android:title="@string/pref_title_recordingFinishedMessage"
+            android:selectAllOnFocus="true"
+            android:singleLine="true"
+            android:defaultValue="@string/recordingFinishedMessage"/>
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        android:title="@string/pref_category_ui_timing">
+        <EditTextPreference
+            android:defaultValue="10"
+            android:key="@string/pref_key_resetTimer"
+            android:selectAllOnFocus="true"
+            android:singleLine="true"
+            android:inputType="numberDecimal"
+            android:digits="0123456789"
+            android:title="@string/pref_title_resetTimer" />
+    </PreferenceCategory>
+
+</PreferenceScreen>

@@ -1,127 +1,133 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.motion.widget.MotionLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="fill_parent"
-    android:layout_height="fill_parent"
-    android:orientation="vertical"
-    android:visibility="visible">
+    android:id="@+id/motionLayout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#CCDCBA"
+    app:layoutDescription="@xml/media_recorder_recipe_scene"
+    tools:context=".MainActivity">
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical">
+    <FrameLayout
+        android:id="@+id/frameLayout"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginStart="100dp"
+        android:layout_marginTop="50dp"
+        android:layout_marginEnd="150dp"
+        android:background="@drawable/border"
+        app:layout_constraintDimensionRatio="H,16:9"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
 
-        <android.support.constraint.ConstraintLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent">
-
-            <SurfaceView
-                android:id="@+id/surfaceView"
-                android:layout_width="2720px"
-                android:layout_height="0dp"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
-
-            <TextView
-                android:id="@+id/resterendTextView"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="16dp"
-                android:text="TextView"
-                android:textColor="@android:color/white"
-                android:textSize="36sp"
-                android:visibility="invisible"
-                app:layout_constraintBottom_toBottomOf="@+id/surfaceView"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent" />
-        </android.support.constraint.ConstraintLayout>
-    </LinearLayout>
-
-    <android.support.constraint.ConstraintLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:id="@+id/constraintLayout">
-
-        <LinearLayout
-            android:id="@+id/linearLayout"
+        <SurfaceView
+            android:id="@+id/surfaceView"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:orientation="horizontal"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent">
-
-            <ImageView
-                android:id="@+id/door1"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:clickable="true"
-                android:scaleType="fitXY"
-                android:src="@drawable/leftdoor" />
-
-            <ImageView
-                android:id="@+id/door2"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:clickable="true"
-                android:scaleType="fitXY"
-                android:src="@drawable/rightdoor" />
-
-        </LinearLayout>
-
-        <EditText
-            android:id="@+id/nrTxt"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="8dp"
-            android:layout_marginEnd="8dp"
-            android:layout_marginStart="8dp"
-            android:layout_marginTop="8dp"
-            android:ems="5"
-            android:inputType="number"
-            android:textColor="@android:color/background_light"
-            android:textSize="40sp"
-            android:gravity="center"
-            app:layout_constraintBottom_toBottomOf="@+id/linearLayout"
-            app:layout_constraintEnd_toEndOf="@+id/linearLayout"
-            app:layout_constraintStart_toStartOf="@+id/linearLayout"
-            android:backgroundTint="@android:color/transparent"
-            app:layout_constraintTop_toTopOf="@+id/linearLayout" />
-
-        <TextView
-            android:id="@+id/nrLbl"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="32dp"
-            android:layout_marginEnd="8dp"
-            android:layout_marginStart="8dp"
-            android:backgroundTint="@android:color/transparent"
-            android:ems="10"
-            android:gravity="center"
-            android:text="Voer nummer in"
-            android:textColor="@android:color/background_light"
-            android:textSize="30sp"
-            app:layout_constraintBottom_toTopOf="@+id/nrTxt"
-            app:layout_constraintEnd_toEndOf="@+id/linearLayout"
-            app:layout_constraintStart_toStartOf="@+id/linearLayout" />
-
-        <Button
-            android:id="@+id/recordingButton"
-            android:layout_width="148dp"
-            android:layout_height="63dp"
-            android:layout_marginBottom="80dp"
-            android:background="@drawable/roundbutton"
-            android:onClick="onRecordButtonClick"
-            android:text="@string/start"
-            android:textSize="24sp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent" />
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
-    </android.support.constraint.ConstraintLayout>
+    </FrameLayout>
 
-</FrameLayout>
+    <com.airbnb.lottie.LottieAnimationView
+        android:id="@+id/recordingButton"
+        android:layout_width="300dp"
+        android:layout_height="300dp"
+        android:layout_marginEnd="-75dp"
+        android:onClick="onRecordButtonClick"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:lottie_autoPlay="false"
+        app:lottie_loop="false"
+        app:lottie_rawRes="@raw/recordstop_button"
+        app:lottie_renderMode="automatic"
+        app:lottie_speed="1.0" />
+
+    <com.airbnb.lottie.LottieAnimationView
+        android:id="@+id/countdown"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:scaleType="fitCenter"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:lottie_autoPlay="false"
+        app:lottie_loop="false"
+        app:lottie_rawRes="@raw/countdown"
+        app:lottie_renderMode="automatic"
+        app:lottie_speed="1.0" />
+
+    <TextSwitcher
+        android:id="@+id/textSwitcher"
+        android:layout_width="match_parent"
+        android:layout_height="100dp"
+        android:layout_marginStart="100dp"
+        android:layout_marginEnd="150dp"
+        android:background="@drawable/border"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/frameLayout">
+
+        <TextView
+            android:id="@+id/welcomeMessage"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:autoSizeTextType="uniform"
+            android:gravity="center"
+            android:shadowColor="#000000"
+            android:shadowDx="1.5"
+            android:shadowDy="1.3"
+            android:shadowRadius="1.6"
+            android:textColor="#FFFFFF" />
+
+        <TextView
+            android:id="@+id/recordingFinishedMessage"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:autoSizeTextType="uniform"
+            android:gravity="center"
+            android:shadowColor="#000000"
+            android:shadowDx="1.5"
+            android:shadowDy="1.3"
+            android:shadowRadius="1.6"
+            android:textColor="#FFFFFF" />
+
+    </TextSwitcher>
+
+    <com.airbnb.lottie.LottieAnimationView
+        android:id="@+id/restartButton"
+        android:layout_width="300dp"
+        android:layout_height="300dp"
+        android:onClick="onRestartButtonClick"
+        app:layout_constraintBottom_toBottomOf="@+id/textSwitcher"
+        app:layout_constraintEnd_toEndOf="@+id/recordingButton"
+        app:layout_constraintStart_toStartOf="@+id/recordingButton"
+        app:layout_constraintTop_toTopOf="@+id/textSwitcher"
+        app:lottie_autoPlay="false"
+        app:lottie_loop="false"
+        app:lottie_rawRes="@raw/reload_button"
+        app:lottie_renderMode="automatic"
+        app:lottie_speed="1.0" />
+
+    <com.airbnb.lottie.LottieAnimationView
+        android:id="@+id/recording"
+        android:layout_width="75dp"
+        android:layout_height="75dp"
+        android:layout_marginEnd="25dp"
+        android:visibility="invisible"
+        app:layout_constraintEnd_toEndOf="@+id/frameLayout"
+        app:layout_constraintTop_toTopOf="@+id/frameLayout"
+        app:lottie_autoPlay="true"
+        app:lottie_loop="true"
+        app:lottie_rawRes="@raw/recording"
+        app:lottie_renderMode="automatic"
+        app:lottie_speed="1.0" />
+
+</androidx.constraintlayout.motion.widget.MotionLayout>
