@@ -19,7 +19,6 @@ import android.os.StatFs;
 import android.provider.MediaStore;
 import android.util.Log;
 import android.view.SurfaceHolder;
-import android.widget.SeekBar;
 
 import androidx.annotation.NonNull;
 
@@ -48,7 +47,7 @@ public class VideoRecorder {
     private boolean prefMaxRecordingLengthEnabled;
     private int prefMaxRecordingLength;
     private int prefAudioSource;
-    private int zoomLevel;
+    private String folderName;
     private CamcorderProfile prefProfile;
 
     private Context mContext;
@@ -68,7 +67,7 @@ public class VideoRecorder {
                 }
                 try {
                     Camera.Parameters parameters = mCamera.getParameters();
-                    parameters.setZoom(zoomLevel);
+                    parameters.setZoom(pr.getZoomLevel());
                     mCamera.setParameters(parameters);
                     mCamera.setPreviewDisplay(surfaceHolder);
                 } catch (IOException e) {
@@ -111,25 +110,22 @@ public class VideoRecorder {
         }
     }
 
-    private void updatePreferences(){
+    public void updatePreferences(){
         prefMaxRecordingLengthEnabled = pr.getMaxLengthEnabled();
         if(prefMaxRecordingLengthEnabled) {
             prefMaxRecordingLength = pr.getMaxRecordingLength();
         }
         prefAudioSource = pr.getSavedAudioSource();
         prefProfile = pr.getSavedCamcorderProfile();
-        zoomLevel = pr.getZoomLevel();
+        folderName = pr.getFolderName();
     }
 
-    public String startRecording() throws Exception {
-        return startRecording("default");
-    }
     public String startRecording(String fileName) throws Exception {
         if(recording) throw new Exception("Recording already running");
         String recordedFileName = "";
         if(!recorderInitialized){
             try {
-                recordedFileName = initRecorder(fileName);
+                recordedFileName = initRecorder(fileName, folderName);
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -165,7 +161,7 @@ public class VideoRecorder {
         return availableBlocks * blockSize;
     }
 
-    public String initRecorder(String fileName) throws IOException {
+    public String initRecorder(String fileName, String folder) throws IOException {
         if(getAvailableInternalMemorySize() < 500000000L){
             AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
             builder.setTitle("Insufficient memory");
@@ -195,28 +191,24 @@ public class VideoRecorder {
 
         if(fileName == null){
             String timeStamp = new SimpleDateFormat("yyyy-MM-dd_HH_mm_ss").format(new Date());
-            fileName = "/video_" + timeStamp + ".mp4";
+            fileName = "video_" + timeStamp;
         }
-        Uri videoUri;
-        ParcelFileDescriptor file;
-        ContentValues values = new ContentValues(5);
-        values.put(MediaStore.Video.Media.TITLE, fileName);
-        values.put(MediaStore.Video.Media.DATE_ADDED, (int) (System.currentTimeMillis() / 1000));
-        values.put(MediaStore.Video.Media.MIME_TYPE, "video/mp4");
-        values.put(MediaStore.Video.Media.DISPLAY_NAME, fileName);
-        values.put(MediaStore.Video.Media.RELATIVE_PATH, "Movies/StudioSurprise/");
+        String location = Environment.DIRECTORY_MOVIES + File.separator + mContext.getString(R.string.app_name) + File.separator;
+        if(folder != null && folder != "") location += folder + File.separator;
 
-        videoUri = this.mContext.getContentResolver().insert(MediaStore.Video.Media.EXTERNAL_CONTENT_URI, values);
+        Uri videoUri = getExistingVideoUriOrNullQ(fileName, location);
+        ParcelFileDescriptor file;
+        if(videoUri == null) {
+            ContentValues values = new ContentValues(5);
+            values.put(MediaStore.Video.Media.TITLE, fileName);
+            values.put(MediaStore.Video.Media.DATE_ADDED, (int) (System.currentTimeMillis() / 1000));
+            values.put(MediaStore.Video.Media.MIME_TYPE, "video/mp4");
+            values.put(MediaStore.Video.Media.DISPLAY_NAME, fileName);
+            values.put(MediaStore.Video.Media.RELATIVE_PATH, location);
+            videoUri = this.mContext.getContentResolver().insert(MediaStore.Video.Media.EXTERNAL_CONTENT_URI, values);
+        }
         file = this.mContext.getContentResolver().openFileDescriptor(videoUri, "wt");
 
-        //String dir;
-        //if(Environment.MEDIA_MOUNTED.equals(Environment.getExternalStorageState())) {
-        //    dir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MOVIES) + "/StudioSurprise";
-        //} else {
-        //dir = getFilesDir().getAbsolutePath();
-        //}
-        //dir = mContext.getExternalFilesDir(Environment.DIRECTORY_MOVIES).getAbsolutePath();
-        //mMediaRecorder.setOutputFile(dir + fileName);
         FileDescriptor fileDescriptor = file.getFileDescriptor();
         mMediaRecorder.setOutputFile(fileDescriptor);
 
@@ -228,6 +220,27 @@ public class VideoRecorder {
         recorderInitialized = true;
         return fileName;
     }
+
+    private Uri getExistingVideoUriOrNullQ(String fileName, String location){
+        String[] projection = {MediaStore.MediaColumns._ID};
+
+        String selection = MediaStore.MediaColumns.RELATIVE_PATH + "='" + location + "' AND "
+                + MediaStore.MediaColumns.DISPLAY_NAME+"='" + fileName + ".mp4'";
+
+        ContentResolver resolver = this.mContext.getContentResolver();
+        Cursor cur = resolver.query( MediaStore.Video.Media.EXTERNAL_CONTENT_URI,
+                projection, selection, null, null );
+
+        if (cur != null && cur.getCount() >= 1) {
+                if(cur.moveToFirst()) {
+                    long id = cur.getLong(cur.getColumnIndexOrThrow(MediaStore.MediaColumns._ID));
+                    return ContentUris.withAppendedId(
+                            MediaStore.Video.Media.EXTERNAL_CONTENT_URI,  id);
+                }
+        }
+        return null;
+    }
+
     public class VideoLimiter extends Activity implements MediaRecorder.OnInfoListener {
 
         public void observeLimit(int delay) {

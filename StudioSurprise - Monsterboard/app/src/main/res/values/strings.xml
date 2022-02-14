@@ -1,13 +1,8 @@
 <resources>
-    <string name="app_name">Video recorder</string>
+    <string name="app_name">Condovisie</string>
 
     <string name="request_password">Enter password</string>
-    <string name="stop">Stop</string>
-    <string name="start">Start opname</string>
 
-    <!-- TODO: Remove or change this placeholder text -->
     <string name="welcomeMessage">Druk op de rode knop en begin met het noemen van je naam…</string>
     <string name="recordingFinishedMessage">Bedankt voor je bijdrage!</string>
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

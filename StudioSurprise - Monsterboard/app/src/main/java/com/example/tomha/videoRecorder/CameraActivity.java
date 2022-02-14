@@ -32,6 +32,7 @@ import androidx.constraintlayout.motion.widget.MotionLayout;
 import com.airbnb.lottie.LottieAnimationView;
 import com.example.tomha.videoRecorder.Preferences.CameraPreferenceReader;
 import com.example.tomha.videoRecorder.Preferences.SettingsActivity;
+import com.example.tomha.videoRecorder.Preferences.SettingsPreferenceReader;
 import com.example.tomha.videoRecorder.VideoRecorder.IRecorderCallback;
 import com.example.tomha.videoRecorder.VideoRecorder.VideoRecorder;
 
@@ -55,8 +56,8 @@ public class CameraActivity extends Activity implements IRecorderCallback {
     private VideoRecorder videoRecorder;
     private String mPreviousFileName;
 
-    private CameraPreferenceReader pr;
-    private CountDownTimer secretMenuTimer = new CountDownTimer(1000, 1000) {
+    private SettingsPreferenceReader pr;
+    private CountDownTimer secretMenuTimer = new CountDownTimer(4000, 1000) {
         public void onTick(long millisUntilFinished) {
             //Do nothing
         }
@@ -75,7 +76,7 @@ public class CameraActivity extends Activity implements IRecorderCallback {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.media_recorder_recipe);
 
-        pr = new CameraPreferenceReader(this);
+        pr = new SettingsPreferenceReader(this);
         videoRecorder = new VideoRecorder(this, ((SurfaceView)findViewById(R.id.surfaceView)).getHolder());
         countDownTimer = findViewById(R.id.countdown);
         countDownTimer.addAnimatorUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
@@ -84,7 +85,7 @@ public class CameraActivity extends Activity implements IRecorderCallback {
                 Double value = Double.parseDouble(valueAnimator.getAnimatedValue().toString());
                 if(value > 0.8 && !videoRecorder.isRecording()){
                     try {
-                        mPreviousFileName = restart ? videoRecorder.startRecording(mPreviousFileName): videoRecorder.startRecording();
+                        mPreviousFileName = restart ? videoRecorder.startRecording(mPreviousFileName): videoRecorder.startRecording(null);
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
@@ -159,6 +160,7 @@ public class CameraActivity extends Activity implements IRecorderCallback {
     }
 
     public void onRestartButtonClick(View v) {
+        v.setVisibility(View.INVISIBLE);
         restart = true;
         onRecordButtonClick();
     }
@@ -171,10 +173,8 @@ public class CameraActivity extends Activity implements IRecorderCallback {
             case MotionEvent.ACTION_POINTER_DOWN: {
                 int fingerCount = e.getPointerCount();
                 if (fingerCount == 2) {
-                    // We have four fingers touching, so start the timer
                     secretMenuTimer.cancel();
                     secretMenuTimer.start();
-                    //twoFingerDownTime = System.currentTimeMillis();
                 } else if (fingerCount > 2) {
                     secretMenuTimer.cancel();
                 }
@@ -184,9 +184,7 @@ public class CameraActivity extends Activity implements IRecorderCallback {
             case MotionEvent.ACTION_POINTER_UP: {
                 int fingerCount = e.getPointerCount() - 1;
                  if (fingerCount < 2) {
-                    // Fewer than four fingers, so reset the timer
                     secretMenuTimer.cancel();
-                    //twoFingerDownTime = -1;
                 }
                 else if (fingerCount == 2) {
                     secretMenuTimer.cancel();
@@ -228,14 +226,12 @@ public class CameraActivity extends Activity implements IRecorderCallback {
     }
 
     private void updatePreferences(){
-        welcomeMessage = pr.getSharedPreferenceValue(getString(R.string.pref_key_welcomeMessage));
-        recordingFinishedMessage = pr.getSharedPreferenceValue(getString(R.string.pref_key_recordingFinishedMessage));
+        welcomeMessage = pr.getWelcomeMessage();
+        recordingFinishedMessage = pr.getRecordingFinishedMessage();
         ((TextView)findViewById(R.id.welcomeMessage)).setText(welcomeMessage);
         ((TextView)findViewById(R.id.recordingFinishedMessage)).setText(recordingFinishedMessage);
-
-        String resetPreference = pr.getSharedPreferenceValue(getString(R.string.pref_key_resetTimer));
-        if(resetPreference == "") resetPreference = "10";
-        resetTimer = Integer.parseInt(resetPreference);
+        resetTimer = pr.getResetTimer();
+        videoRecorder.updatePreferences();
     }
 
     private void openSettingsMenu(){
@@ -247,6 +243,10 @@ public class CameraActivity extends Activity implements IRecorderCallback {
         // Check which request we're responding to
         if (requestCode == SETTINGS_REQUEST) {
             updatePreferences();
+            if(data != null && data.getBooleanExtra("overwrite", false)){
+                restartButton.setVisibility(View.VISIBLE);
+                restartButton.playAnimation();
+            }
         }
     }
 
@@ -281,6 +281,6 @@ public class CameraActivity extends Activity implements IRecorderCallback {
                 }, resetTimer * 1000);
             }
         }, 4000);
-        findViewById(R.id.recording).setVisibility(View.INVISIBLE);
+        recording.setVisibility(View.INVISIBLE);
     }
 }

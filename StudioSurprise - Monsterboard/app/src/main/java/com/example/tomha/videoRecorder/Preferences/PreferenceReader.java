@@ -23,7 +23,9 @@ public class PreferenceReader{
 
     public Integer getSharedPreferenceIntegerValue(String key){
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
-        return prefs.getInt(key, 0);
+        Integer value = prefs.getInt(key, 0);
+
+        return value;
     }
 
     public boolean getSharedPreferenceBooleanValue(String key){

@@ -105,11 +105,11 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
                     preference,
                     PreferenceManager.getDefaultSharedPreferences(
                             preference.getContext()).getBoolean(preference.getKey(),true));
-        } else if(preference.getKey().equals("zoomLevel")){
-            sBindPreferenceSummaryToValueListener.onPreferenceChange(preference,
-                    PreferenceManager
-                            .getDefaultSharedPreferences(preference.getContext())
-                            .getInt(preference.getKey(), 0));
+//        } else if(preference.getKey().equals("zoomLevel")){
+//            sBindPreferenceSummaryToValueListener.onPreferenceChange(preference,
+//                    PreferenceManager
+//                            .getDefaultSharedPreferences(preference.getContext())
+//                            .getInt(preference.getKey(), 0));
         }
         else if(!preference.getKey().contains("password")){
             sBindPreferenceSummaryToValueListener.onPreferenceChange(preference,
@@ -185,7 +185,8 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
         return PreferenceFragment.class.getName().equals(fragmentName)
                 || CameraPreferenceFragment.class.getName().equals(fragmentName)
                 || UIPreferenceFragment.class.getName().equals(fragmentName)
-                || SecurityPreferenceFragment.class.getName().equals(fragmentName);
+                || SecurityPreferenceFragment.class.getName().equals(fragmentName)
+                || StoragePreferenceFragment.class.getName().equals(fragmentName);
     }
 
     /**
@@ -206,7 +207,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
                 @Override
                 public boolean onPreferenceClick(Preference preference) {
                     Intent intent = new Intent(getActivity(), ZoomSettings.class);
-                    Integer zoomLevel = preference.getSharedPreferences().getInt(getString(R.string.pref_key_zoomlevel), 0);
+                    Integer zoomLevel = Integer.valueOf(preference.getSharedPreferences().getString(getString(R.string.pref_key_zoomlevel), "0"));
                     intent.putExtra(getString(R.string.pref_key_zoomlevel), zoomLevel);
                     startActivityForResult(intent, ZOOM_SETTINGS_REQUEST);
                     return true;
@@ -234,7 +235,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
                         Integer returnValue = data.getIntExtra(getString(R.string.pref_key_zoomlevel), 0);
                         SharedPreferences sp = getPreferenceScreen().getSharedPreferences();
                         SharedPreferences.Editor editor = sp.edit();
-                        editor.putInt(getString(R.string.pref_key_zoomlevel), returnValue);
+                        editor.putString(getString(R.string.pref_key_zoomlevel), returnValue.toString());
                         editor.apply();
                         Preference editTextPref = findPreference(getString(R.string.pref_key_zoomlevel));
                         editTextPref
@@ -288,6 +289,32 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
             // guidelines.
             bindPreferenceSummaryToValue(findPreference(getString(R.string.pref_key_passwordEnabled)));
             bindPreferenceSummaryToValue(findPreference(getString(R.string.pref_key_password)));
+        }
+    }
+
+    @TargetApi(Build.VERSION_CODES.HONEYCOMB)
+    public static class StoragePreferenceFragment extends PreferenceFragment {
+        @Override
+        public void onCreate(Bundle savedInstanceState) {
+            super.onCreate(savedInstanceState);
+            addPreferencesFromResource(R.xml.pref_storage);
+            setHasOptionsMenu(true);
+            Preference button = findPreference(getString(R.string.pref_key_overwrite));
+            button.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+                @Override
+                public boolean onPreferenceClick(Preference preference) {
+                    Intent resultIntent = new Intent();
+                    resultIntent.putExtra("overwrite", true);
+                    getActivity().setResult(Activity.RESULT_OK, resultIntent);
+                    getActivity().finish();
+                    return true;
+                }
+            });
+            // Bind the summaries of EditText/List/Dialog/Ringtone preferences
+            // to their values. When their values change, their summaries are
+            // updated to reflect the new value, per the Android Design
+            // guidelines.
+            bindPreferenceSummaryToValue(findPreference(getString(R.string.pref_key_folderName)));
         }
     }
 }

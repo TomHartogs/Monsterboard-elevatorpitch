@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.content.Intent;
+import android.os.Handler;
 import android.preference.ListPreference;
 import android.preference.PreferenceCategory;
 import android.widget.Toast;
@@ -23,13 +24,16 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setContentView(R.layout.splash_screen);
 
-        if(!hasPermissions(this, PERMISSIONS)){
-            ActivityCompat.requestPermissions(this, PERMISSIONS, PERMISSION_ALL);
-            Toast.makeText(this, "Permission for camera, mic and external storage is required to run the app!", Toast.LENGTH_LONG).show();
-        } else {
-            startRecordingActivity();
-        }
+        new Handler().postDelayed(() -> {
+            if(!hasPermissions(this, PERMISSIONS)){
+                ActivityCompat.requestPermissions(this, PERMISSIONS, PERMISSION_ALL);
+                Toast.makeText(this, "Permission for camera, mic and external storage is required to run the app!", Toast.LENGTH_LONG).show();
+            } else {
+                startRecordingActivity();
+            }
+        }, 3000);
     }
 
     public static boolean hasPermissions(Context context, String[] permissions) {

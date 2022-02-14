@@ -17,4 +17,9 @@
         android:icon="@android:drawable/ic_lock_lock"
         android:title="@string/pref_header_security" />
 
+    <header
+        android:fragment="com.example.tomha.videoRecorder.Preferences.SettingsActivity$StoragePreferenceFragment"
+        android:icon="@android:drawable/ic_menu_save"
+        android:title="@string/pref_header_storage" />
+
 </preference-headers>

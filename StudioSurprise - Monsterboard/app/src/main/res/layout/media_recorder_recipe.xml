@@ -5,7 +5,7 @@
     android:id="@+id/motionLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#CCDCBA"
+    android:background="#DFEAD0"
     app:layoutDescription="@xml/media_recorder_recipe_scene"
     tools:context=".MainActivity">
 
@@ -80,6 +80,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:autoSizeTextType="uniform"
+            android:fontFamily="@font/century_gothic"
             android:gravity="center"
             android:shadowColor="#000000"
             android:shadowDx="1.5"
@@ -92,6 +93,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:autoSizeTextType="uniform"
+            android:fontFamily="@font/century_gothic"
             android:gravity="center"
             android:shadowColor="#000000"
             android:shadowDx="1.5"

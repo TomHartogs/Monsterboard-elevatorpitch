@@ -92,6 +92,11 @@ public class CameraPreferenceReader extends PreferenceReader {
     }
 
     public int getZoomLevel(){
-        return super.getSharedPreferenceIntegerValue(context.getString(R.string.pref_key_zoomlevel));
+        String preferenceValue = super.getSharedPreferenceValue(context.getString(R.string.pref_key_zoomlevel));
+        return preferenceValue == "" ? 0 : Integer.valueOf(preferenceValue);
+    }
+
+    public String getFolderName(){
+        return super.getSharedPreferenceValue(context.getString(R.string.pref_key_folderName));
     }
 }
