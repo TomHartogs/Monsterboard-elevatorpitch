@@ -8,6 +8,9 @@
     <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
 
     <uses-feature android:name="android.hardware.camera.autofocus" />
+    <uses-feature
+        android:name="android.hardware.camera"
+        android:required="false" />
 
     <application
         android:allowBackup="true"
@@ -19,7 +22,7 @@
             android:name="com.example.tomha.videoRecorder.MainActivity"
             android:noHistory="true"
             android:exported="true"
-            android:screenOrientation="landscape">
+            android:screenOrientation="sensorLandscape">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
@@ -27,16 +30,16 @@
         </activity>
         <activity
             android:name="com.example.tomha.videoRecorder.CameraActivity"
-            android:screenOrientation="landscape"
+            android:screenOrientation="sensorLandscape"
             android:theme="@style/AppTheme" />
         <activity
             android:name="com.example.tomha.videoRecorder.Preferences.SettingsActivity"
-            android:screenOrientation="landscape"
+            android:screenOrientation="sensorLandscape"
             android:label="@string/title_activity_settings"
             android:theme="@style/SettingsTheme"/>
         <activity
             android:name="com.example.tomha.videoRecorder.Preferences.ZoomSettings"
-            android:screenOrientation="landscape"
+            android:screenOrientation="sensorLandscape"
             android:label="ZoomSettings"/>
     </application>
 
