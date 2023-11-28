@@ -18,7 +18,10 @@ import android.os.ParcelFileDescriptor;
 import android.os.StatFs;
 import android.provider.MediaStore;
 import android.util.Log;
+import android.view.Surface;
 import android.view.SurfaceHolder;
+import android.view.WindowManager;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 
@@ -32,7 +35,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 public class VideoRecorder {
-    private SurfaceHolder mPreviewSurfaceHolder;
+    private final SurfaceHolder mPreviewSurfaceHolder;
     public Camera mCamera;
     private MediaRecorder mMediaRecorder;
 
@@ -43,7 +46,7 @@ public class VideoRecorder {
     private boolean recording = false;
     private boolean recorderInitialized = false;
 
-    private CameraPreferenceReader pr;
+    private final CameraPreferenceReader pr;
     private boolean prefMaxRecordingLengthEnabled;
     private int prefMaxRecordingLength;
     private int prefAudioSource;
@@ -53,12 +56,16 @@ public class VideoRecorder {
     private Context mContext;
     private IRecorderCallback callback;
 
+    private int cameraRotationDegrees;
+
     public VideoRecorder(Context context, SurfaceHolder previewSurfaceHolder){
         mContext = context;
         mPreviewSurfaceHolder = previewSurfaceHolder;
         pr = new CameraPreferenceReader(mContext);
         updatePreferences();
         mCamera = CameraHelper.getDefaultFrontFacingCameraInstance();
+        this.cameraRotationDegrees = this.calculateCameraOrientationDegrees();
+
         mPreviewSurfaceHolder.addCallback(new SurfaceHolder.Callback() {
             @Override
             public void surfaceCreated(@NonNull SurfaceHolder surfaceHolder) {
@@ -70,6 +77,7 @@ public class VideoRecorder {
                     parameters.setZoom(pr.getZoomLevel());
                     mCamera.setParameters(parameters);
                     mCamera.setPreviewDisplay(surfaceHolder);
+                    mCamera.setDisplayOrientation(cameraRotationDegrees);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -78,7 +86,6 @@ public class VideoRecorder {
 
             @Override
             public void surfaceChanged(@NonNull SurfaceHolder surfaceHolder, int i, int i1, int i2) {
-
             }
 
             @Override
@@ -108,6 +115,35 @@ public class VideoRecorder {
             mCamera.release();
             mCamera = null;
         }
+    }
+
+    private int calculateCameraOrientationDegrees(){
+        WindowManager windowManager = (WindowManager) mContext.getSystemService(Context.WINDOW_SERVICE);
+        int rotation = windowManager.getDefaultDisplay()
+                .getRotation();
+        int degrees = 0;
+        switch (rotation) {
+            case Surface.ROTATION_0: degrees = 0; break;
+            case Surface.ROTATION_90: degrees = 90; break;
+            case Surface.ROTATION_180: degrees = 180; break;
+            case Surface.ROTATION_270: degrees = 270; break;
+        }
+        int result;
+        Camera.CameraInfo cameraInfo = new Camera.CameraInfo();
+        Camera.getCameraInfo(0, cameraInfo);
+        if (cameraInfo.facing == Camera.CameraInfo.CAMERA_FACING_FRONT) {
+            result = (cameraInfo.orientation + degrees) % 360;
+            result = (360 - result) % 360;  // compensate the mirror
+        } else {  // back-facing
+            result = (cameraInfo.orientation - degrees + 360) % 360;
+        }
+        Toast.makeText(mContext, "Result: " + result, Toast.LENGTH_SHORT);
+        return result;
+    }
+
+    public void updateOrientation(){
+        this.cameraRotationDegrees = this.calculateCameraOrientationDegrees();
+        if(mCamera != null) mCamera.setDisplayOrientation(this.cameraRotationDegrees);
     }
 
     public void updatePreferences(){
@@ -178,8 +214,9 @@ public class VideoRecorder {
 
         // It is very important to unlock the camera before doing setCamera
         // or it will results in a black preview
-        if (mMediaRecorder == null) mMediaRecorder = new MediaRecorder();
+        mMediaRecorder = new MediaRecorder();
         mMediaRecorder.setPreviewDisplay(mPreviewSurfaceHolder.getSurface());
+        mMediaRecorder.setOrientationHint(this.cameraRotationDegrees);
         mMediaRecorder.setCamera(mCamera);
         if(prefMaxRecordingLengthEnabled){
             VideoLimiter vl = new VideoLimiter();
@@ -194,7 +231,7 @@ public class VideoRecorder {
             fileName = "video_" + timeStamp;
         }
         String location = Environment.DIRECTORY_MOVIES + File.separator + mContext.getString(R.string.app_name) + File.separator;
-        if(folder != null && folder != "") location += folder + File.separator;
+        if(folder != null && !folder.equals("")) location += folder + File.separator;
 
         Uri videoUri = getExistingVideoUriOrNullQ(fileName, location);
         ParcelFileDescriptor file;

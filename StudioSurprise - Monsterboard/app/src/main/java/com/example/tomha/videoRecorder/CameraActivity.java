@@ -1,17 +1,12 @@
 package com.example.tomha.videoRecorder;
 
-/**
- * Created by tomha on 27-2-2018.
- */
-
 
 import android.animation.Animator;
-import android.animation.ValueAnimator;
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.content.DialogInterface;
+import android.content.Context;
 import android.content.Intent;
-import android.hardware.Camera;
+import android.hardware.display.DisplayManager;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.os.Handler;
@@ -22,7 +17,6 @@ import android.view.MotionEvent;
 import android.view.SurfaceView;
 import android.view.View;
 import android.widget.EditText;
-import android.widget.SeekBar;
 import android.widget.TextSwitcher;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -30,15 +24,10 @@ import android.widget.Toast;
 import androidx.constraintlayout.motion.widget.MotionLayout;
 
 import com.airbnb.lottie.LottieAnimationView;
-import com.example.tomha.videoRecorder.Preferences.CameraPreferenceReader;
 import com.example.tomha.videoRecorder.Preferences.SettingsActivity;
 import com.example.tomha.videoRecorder.Preferences.SettingsPreferenceReader;
 import com.example.tomha.videoRecorder.VideoRecorder.IRecorderCallback;
 import com.example.tomha.videoRecorder.VideoRecorder.VideoRecorder;
-
-import org.w3c.dom.Text;
-
-import java.io.IOException;
 
 
 public class CameraActivity extends Activity implements IRecorderCallback {
@@ -57,7 +46,34 @@ public class CameraActivity extends Activity implements IRecorderCallback {
     private String mPreviousFileName;
 
     private SettingsPreferenceReader pr;
-    private CountDownTimer secretMenuTimer = new CountDownTimer(4000, 1000) {
+
+    private static class MyDisplayListener implements DisplayManager.DisplayListener {
+        private final VideoRecorder videoRecorder;
+
+        public MyDisplayListener(VideoRecorder videoRecorder) {
+            this.videoRecorder = videoRecorder;
+        }
+        @Override
+        public void onDisplayAdded(int displayId) {
+            // Handle display addition
+            Log.d("DisplayChanges", "Display added: " + displayId);
+        }
+
+        @Override
+        public void onDisplayRemoved(int displayId) {
+            // Handle display removal
+            Log.d("DisplayChanges", "Display removed: " + displayId);
+        }
+
+        @Override
+        public void onDisplayChanged(int displayId) {
+            // Handle display changes
+            if (videoRecorder != null) {
+                videoRecorder.updateOrientation();
+            }
+        }
+    }
+    private final CountDownTimer secretMenuTimer = new CountDownTimer(4000, 1000) {
         public void onTick(long millisUntilFinished) {
             //Do nothing
         }
@@ -78,20 +94,21 @@ public class CameraActivity extends Activity implements IRecorderCallback {
 
         pr = new SettingsPreferenceReader(this);
         videoRecorder = new VideoRecorder(this, ((SurfaceView)findViewById(R.id.surfaceView)).getHolder());
+        DisplayManager displayManager = (DisplayManager) getSystemService(Context.DISPLAY_SERVICE);
+        MyDisplayListener myDisplayListener = new MyDisplayListener(videoRecorder);
+        displayManager.registerDisplayListener(myDisplayListener, null);
         countDownTimer = findViewById(R.id.countdown);
-        countDownTimer.addAnimatorUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-            @Override
-            public void onAnimationUpdate(ValueAnimator valueAnimator) {
-                Double value = Double.parseDouble(valueAnimator.getAnimatedValue().toString());
-                if(value > 0.8 && !videoRecorder.isRecording()){
-                    try {
-                        mPreviousFileName = restart ? videoRecorder.startRecording(mPreviousFileName): videoRecorder.startRecording(null);
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
+        countDownTimer.addAnimatorUpdateListener(valueAnimator -> {
+            double value = Double.parseDouble(valueAnimator.getAnimatedValue().toString());
+            if(value > 0.8 && !videoRecorder.isRecording()){
+                try {
+                    mPreviousFileName = restart ? videoRecorder.startRecording(mPreviousFileName): videoRecorder.startRecording(null);
+                } catch (Exception e) {
+                    e.printStackTrace();
                 }
             }
         });
+
         countDownTimer.addAnimatorListener(new Animator.AnimatorListener() {
             @Override
             public void onAnimationStart(Animator animator) {
@@ -128,10 +145,9 @@ public class CameraActivity extends Activity implements IRecorderCallback {
 
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
-        switch (keyCode) {
-            case KeyEvent.KEYCODE_HEADSETHOOK:
-                onRecordButtonClick();
-                return true;
+        if (keyCode == KeyEvent.KEYCODE_HEADSETHOOK) {
+            onRecordButtonClick();
+            return true;
         }
         return super.onKeyDown(keyCode, event);
     }
@@ -205,22 +221,16 @@ public class CameraActivity extends Activity implements IRecorderCallback {
 
         final EditText userInput = promptsView.findViewById(R.id.editTextPasswordInput);
         alertDialogBuilder.setCancelable(false);
-        alertDialogBuilder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int id) {
-                if (userInput.getText().toString().equals(pr.getSharedPreferenceValue(getString(R.string.pref_key_password)))) {
-                    openSettingsMenu();
-                } else {
-                    Toast message = Toast.makeText(getApplicationContext(), "Wrong password entered", Toast.LENGTH_SHORT);
-                    message.show();
-                    showPasswordPrompt();
-                }
+        alertDialogBuilder.setPositiveButton("OK", (dialog, id) -> {
+            if (userInput.getText().toString().equals(pr.getSharedPreferenceValue(getString(R.string.pref_key_password)))) {
+                openSettingsMenu();
+            } else {
+                Toast message = Toast.makeText(getApplicationContext(), "Wrong password entered", Toast.LENGTH_SHORT);
+                message.show();
+                showPasswordPrompt();
             }
         });
-        alertDialogBuilder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int id) {
-                dialog.cancel();
-            }
-        });
+        alertDialogBuilder.setNegativeButton("Cancel", (dialog, id) -> dialog.cancel());
 
         alertDialogBuilder.create().show();
     }
@@ -252,12 +262,7 @@ public class CameraActivity extends Activity implements IRecorderCallback {
 
     @Override
     public void onRecordingStarted() {
-        recording.getHandler().post(new Runnable() {
-            @Override
-            public void run() {
-                recording.setVisibility(View.VISIBLE);
-            }
-        });
+        recording.getHandler().post(() -> recording.setVisibility(View.VISIBLE));
     }
 
     @Override
@@ -267,19 +272,13 @@ public class CameraActivity extends Activity implements IRecorderCallback {
         recordingButton.setSpeed(-1);
         recordingButton.playAnimation();
         mTextSwitcher.setText(recordingFinishedMessage);
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                restartButton.setVisibility(View.VISIBLE);
-                restartButton.playAnimation();
-                new Handler().postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        restartButton.setVisibility(View.INVISIBLE);
-                        mTextSwitcher.setText(welcomeMessage);
-                    }
-                }, resetTimer * 1000);
-            }
+        new Handler().postDelayed(() -> {
+            restartButton.setVisibility(View.VISIBLE);
+            restartButton.playAnimation();
+            new Handler().postDelayed(() -> {
+                restartButton.setVisibility(View.INVISIBLE);
+                mTextSwitcher.setText(welcomeMessage);
+            }, resetTimer * 1000);
         }, 4000);
         recording.setVisibility(View.INVISIBLE);
     }
